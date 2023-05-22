@@ -6,9 +6,13 @@ import reportWebVitals from './reportWebVitals';
 import {Provider} from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit';
 import financialInfoReducer from './formSlice'
+import tradingInfoReducer from './form2Slice'
 
 const store=configureStore({
-  reducer: financialInfoReducer,
+  reducer:{
+    financial: financialInfoReducer,
+    trading: tradingInfoReducer,
+  } 
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

@@ -4,7 +4,7 @@ const formSlice = createSlice({
     name:'forms',
     initialState: [],
     reducers:{
-        addFinancialInfo: (state,action)=>{
+        addFinancialInfo: (state,action)=>{ 
             
             state.push(action.payload);
         },

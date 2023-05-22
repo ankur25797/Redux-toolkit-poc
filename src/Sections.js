@@ -1,74 +1,151 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState} from 'react';
 import financialInfoJson from "./financialInfo.json";
+import tradingInfoJson from "./tradingInfo.json";
 import { useDispatch, useSelector } from 'react-redux';
 import { addFinancialInfo } from './formSlice';
+import { addTradingInfo } from './form2Slice';
 import './Sections.css'
+
 import {
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  TextField,
+  // List,
+  // ListItem,
+  // ListItemText,
+  // IconButton,
+  // TextField,
+  Box,
+  InputLabel,
+  FormControl,
   Button,
+  MenuItem,
 } from "@mui/material";
+import Select from '@mui/material/Select';
+
 
 
 const Sections = () => {
   
-  // var data=JSON.stringify(financialInfoJson,null,2);
-  
-  
+  const [displayForm, setDisplayForm] = useState(true);
   const dispatch= useDispatch();
-  const jsonDatas = useSelector((state) => state);
-  const dataString=JSON.stringify(jsonDatas,null,2);
+  const jsonFinancialData = useSelector((state) => state.financial);
+  const dataString=JSON.stringify(jsonFinancialData,null,2);
   const data=JSON.parse(dataString);
-  console.log("String Json",data)
+  // console.log("String Json",data)
 
-  useEffect(()=>{
-      dispatch(addFinancialInfo(financialInfoJson))
-  },[])
+  const jsonTradingData = useSelector((state) => state.trading);
+  const data2String=JSON.stringify(jsonTradingData,null,2);
+  const data2=JSON.parse(data2String);
 
+  // On page reload the json data from the file will be moved to the REDUX STORE using below dispatch function
 
+      useEffect(()=>{
+          dispatch(addFinancialInfo(financialInfoJson))
+          dispatch(addTradingInfo(tradingInfoJson))
+      },[])
 
+//Below function maintains the dropdown to select the values
+
+      const [selectedOption, setSelectedOption] = useState('');
+      const handleDropdownChange = (event) => {
+        setSelectedOption(...selectedOption,event.target.value);
+      };
+
+      const handleFormDisplay = () =>{
+        setDisplayForm(false)
+      }
+      const handleFormSubmit = () =>{
+        
+        console.log("Details are submitted!!")
+      }
+     
 
 
   return (
     <div>
-      {jsonDatas ? (
-        // Render your data here
+        {displayForm ? (
 
-       <div>
-        {/* <pre>{JSON.stringify(jsonDatas, null, 2)}</pre> */}
-        {data.map((d,index)=>{
-          return(
-            <div>
-              <h2>{d.sectionName.toUpperCase()}</h2>
-              <form>
-                
-              
-              {d.cards.map(c=>{
-              return(
                 <div>
-                    <TextField label={c.header} varient="outlined" placeholder={c.header} style={{margin: "10px",width:"550px"}}></TextField>
-                
+                {data.map((d,index)=>{
+                      return(
+                            <div>
+                                <h2>{d.sectionName.toUpperCase()}</h2>
+                                <form >
+                                  
+                                    {d.cards.map((c,index)=>{
+                                        return(
+                                          <div>
+                                          <FormControl variant="outlined" sx={{minWidth: 550, margin: "10px"}}>
+                                            <InputLabel>{c.header}</InputLabel>
+                                            <Select
+                                              key={index}
+                                              value={selectedOption[index]}
+                                              onChange={handleDropdownChange}
+                                              label="Select an option"
+                                            >
+                                              {c.options.map((option) => (
+                                                <MenuItem id="item" key={option.label} value={option.label} required>
+                                                  {option.label}
+                                                </MenuItem>
+                                              ))}
+                                            </Select>
+                                          </FormControl>
+                                          </div>
+                                        )}
+                                    )}
+
+                                      <Button type="submit" onClick={handleFormDisplay} variant="contained" color="primary" > Next </Button>
+                                  </form>
+                            </div>
+                        )
+                    })
+                }
                 </div>
-              
-              )}
-            )}
-              <Button type="submit" variant="contained" color="primary" > Next </Button>
-            </form>
-            </div>
-            )
-        })}
-       </div>
+        ): (
 
+          <div>
+            {data2.map((d,index)=>{
+                  return(
+                        <div>
+                            <h2>{d.sectionName.toUpperCase()}</h2>
+                            <form>
+                              
+                                {d.cards.map((c,index)=>{
+                                    return(
+                                      <div>
+                                      <FormControl variant="outlined" sx={{minWidth: 550, margin: "10px"}}>
+                                        <InputLabel>{c.header}</InputLabel>
+                                        <Select
+                                          key={index}
+                                          value={selectedOption[index]}
+                                          onChange={handleDropdownChange}
+                                          label="Select an option"
+                                        >
+                                          {c.options.map((option) => (
+                                            <MenuItem key={option.label} value={option.label} >
+                                              {option.label}
+                                            </MenuItem>
+                                          ))}
+                                        </Select>
+                                      </FormControl>
+                                      </div>
+                                    )}
+                                )}
 
+                                    <Button onClick={handleFormSubmit} variant="contained" color="primary" > Submit </Button>
+                              </form>
+                        </div>
+                    )
+                })
+            }
+          </div>
+        )}
+        
 
+       
 
-      ) : (
-        // Render a loading state or fallback UI
-        <p>Loading...</p>
-      )}
+      
+          
+          
+
     </div>
   );
 };
